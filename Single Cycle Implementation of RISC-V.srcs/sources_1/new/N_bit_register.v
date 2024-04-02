@@ -30,7 +30,7 @@
 //    output o //output
 //    );
 module N_bit_register #(parameter N = 32)(
-    input load,
+    input load, //if 1 then Q = D on triggering clock edge
     input clk,
     input rst,
     input [N-1:0] D,
