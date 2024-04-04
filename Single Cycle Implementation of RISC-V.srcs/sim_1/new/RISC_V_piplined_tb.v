@@ -57,32 +57,30 @@ end
 
 //    // Wait 100 ns for global reset to finish
 //    #100;
-    
-//    // Reset the system
-//    rst = 0; #20; rst = 1; #20;
+//    rst = 1;
     
 //    // Stimulate the ledSel input
-//    ledSel = 2'b00; #20;
-//    ledSel = 2'b01; #20;
-//    ledSel = 2'b10; #20;
-//    ledSel = 2'b11; #20;
+//    ledSel = 2'b00; #100;
+//    ledSel = 2'b01; #100;
+//    ledSel = 2'b10; #100;
+//    ledSel = 2'b11; #100;
 
 //    // Reset ledSel and stimulate the ssdSel input
 //    ledSel = 2'b00;
-//    ssdSel = 4'b0000; #20;
-//    ssdSel = 4'b0001; #20;
-//    ssdSel = 4'b0010; #20;
-//    ssdSel = 4'b0011; #20;
-//    ssdSel = 4'b0100; #20;
-//    ssdSel = 4'b0101; #20;
-//    ssdSel = 4'b0110; #20;
-//    ssdSel = 4'b0111; #20;
-//    ssdSel = 4'b1000; #20;
-//    ssdSel = 4'b1001; #20;
-//    ssdSel = 4'b1010; #20;
-//    ssdSel = 4'b1011; #20;
+//    ssdSel = 4'b0000; #100;
+//    ssdSel = 4'b0001; #100;
+//    ssdSel = 4'b0010; #100;
+//    ssdSel = 4'b0011; #100;
+//    ssdSel = 4'b0100; #100;
+//    ssdSel = 4'b0101; #100;
+//    ssdSel = 4'b0110; #100;
+//    ssdSel = 4'b0111; #100;
+//    ssdSel = 4'b1000; #100;
+//    ssdSel = 4'b1001; #100;
+//    ssdSel = 4'b1010; #100;
+//    ssdSel = 4'b1011; #100;
 //end
 
-always #50 clk = !clk; // Toggle clock every 10ns
+always #50 clk = !clk;
 
 endmodule

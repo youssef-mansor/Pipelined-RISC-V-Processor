@@ -63,7 +63,7 @@ module control_unit(
             5'b11000: begin
                           Branch <= 1;
                           MemRead <= 0;
-                          MemtoReg <= 1'bx;//don't care
+                          MemtoReg <= 1'bx;
                           ALUOp <= 2'b01;
                           MemWrite <= 0;
                           ALUsrc <= 0;
