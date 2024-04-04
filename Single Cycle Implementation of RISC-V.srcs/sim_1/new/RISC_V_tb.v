@@ -36,7 +36,7 @@ wire [12:0] ssd;
 always #50 clk = ~clk; // 50MHz Clock
 
 // Instantiate the Unit Under Test (UUT)
-RISC_V uut (
+RISC_V_piplined uut (
     .clk(clk), 
     .rst(rst), 
     .ledSel(ledSel), 
@@ -44,6 +44,12 @@ RISC_V uut (
     .LEDs(LEDs), 
     .ssd(ssd)
 );
+//initial begin
+//        clk = 1;
+//        rst = 1;
+//        #50
+//        rst = 0;
+//end
 integer i;
 integer j;
 initial begin

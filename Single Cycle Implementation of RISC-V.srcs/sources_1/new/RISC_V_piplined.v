@@ -33,25 +33,22 @@ module RISC_V_piplined(
     //instruction memory and PC
     wire [31:0] instruction;  
     wire [31:0] PC, PC_plus_4, branch_target, PC_input;
-    wire zero_and_branch;
+    //wire zero_and_branch;
     
     //IF/ID register
-    wire [31:0] IF_ID_PC, IF_ID_Inst;
+    wire [31:0] IF_ID_PC, IF_ID_Inst; //checked
+    
 
     //Control Unit  
-    wire [1:0] ALUOp;
-    wire Branch, MemRead, MemtoReg, MemWrite, AlUSrc, RegWrite;
+    wire [1:0] ALUOp; //checked
+    wire Branch, MemRead, MemtoReg, MemWrite, RegWrite, ALUSrc;
     
     //ID/EX register
     wire [7:0] ID_EX_Ctrl;
-    wire [31:0] ID_EX_PC;
-    wire [31:0] ID_EX_RegR1;
-    wire [31:0] ID_EX_RegR2;
-    wire [31:0] ID_EX_Imm;
+    wire [31:0] ID_EX_PC, ID_EX_RegR1, ID_EX_RegR2, ID_EX_Imm;
     wire [3:0] ID_EX_Func;
-    wire [31:0] ID_EX_Rs1;
-    wire [31:0] ID_EX_Rs2;
-    wire [31:0] ID_EX_Rd;
+    wire [4:0] ID_EX_Rs1, ID_EX_Rs2, ID_EX_Rd;
+    
     
     //ALU
     wire [3:0] ALU_sel;
@@ -70,12 +67,9 @@ module RISC_V_piplined(
     
     //EX/MEM
     wire [4:0] EX_MEM_Ctrl;
-    wire [31:0] EX_MEM_BranchAddOut;
-    wire EX_MEM_Zero;
-    wire [31:0] EX_MEM_ALU_out;
-    wire [31:0] EX_MEM_RegR2;
+    wire [31:0] EX_MEM_BranchAddOut, EX_MEM_ALU_out, EX_MEM_RegR2;
     wire [4:0] EX_MEM_Rd;
-    
+    wire EX_MEM_Zero;
     
     //Data Memory
     wire [31:0] read_data_mem;
@@ -83,13 +77,12 @@ module RISC_V_piplined(
     
     //MEM/WB register
     wire [1:0] MEM_WB_Ctrl;
-    wire [31:0] MEM_WB_Mem_out;
-    wire [31:0] MEM_WB_ALU_out;
+    wire [31:0] MEM_WB_Mem_out, MEM_WB_ALU_out;
     wire [4:0] MEM_WB_Rd;
     
     //Instantiating Modules
     //Instantiate Program counter
-    N_bit_register program_counter(.load(1'b1),
+    N_bit_register #(32) program_counter(.load(1'b1),
                                    .clk(clk),
                                    .rst(rst),
                                    .D(PC_input),
@@ -100,20 +93,20 @@ module RISC_V_piplined(
    //Adder for PC
    assign PC_plus_4 = PC + 4; 
     //instruction memory
-    InstMem IM(.addr(PC[5:0]/4), 
+    InstMem IM(.addr(PC[7:2]),// InstMem IM(.addr(PC[5:0]/4), TODO
                .data_out(instruction));
                
      N_bit_register #(64) IF_ID(
                                 .clk(clk),
                                 .rst(rst),
                                 .load(1'b1),//it should be always one
-                                .D({PC_plus_4, instruction}),
+                                .D({PC, instruction}),
                                 .Q({IF_ID_PC, IF_ID_Inst}));
     //register file
     Register_file RF(.clk(clk),
                      .rst(rst),
-                     .read_reg_1_indx(IF_ID_Inst[19:15]),
-                     .read_reg_2_indx(IF_ID_Inst[24:20]),
+                     .read_reg_1_indx(IF_ID_Inst[19:15]), //rs1 address
+                     .read_reg_2_indx(IF_ID_Inst[24:20]), //rs2 address
                      .write_reg_indx(MEM_WB_Rd), //changed from instruction[11:7]
                      .write_data(write_data),
                      .reg_write(MEM_WB_Ctrl[0]), //MEM_WB_Ctrl[0] = RegWrite
@@ -137,32 +130,39 @@ module RISC_V_piplined(
                                .rst(rst),
                                .load(1'b1), //TODO make sure it's written each triggering edge
                                .D({
-                                    { //re-ordered to match datapath figure WB, M, EX
-                                    RegWrite,   //WB 0
-                                    MemtoReg,   //WB 1
-                                    Branch,     //M  2
-                                    MemRead,    //M
-                                    MemWrite,   //M  4
-                                    ALUOp,      //EX 5
-                                    ALUSrc      //EX 7
-                                    },
-                                    
-                                    IF_ID_PC,
-                                    read_data_1,
-                                    read_data_2,
-                                    ImmGen_output,
+                               { //re-ordered to match datapath figure WB, M, EX
+                                   ALUSrc,     //EX 7
+                                   ALUOp,      //EX 6
+                                               //EX 5
+                                   MemWrite,   //M  4
+                                   MemRead,    //M  3
+                                   Branch,     //M  2
+                                   MemtoReg,   //WB 1
+                                   RegWrite    //WB 0
+                                   },
+                                    IF_ID_PC, //32
+                                    read_data_1, //32
+                                    read_data_2, //32
+                                    ImmGen_output, //32
                                     
                                     {IF_ID_Inst[30],
-                                    IF_ID_Inst[14:12]}, //func3
+                                    IF_ID_Inst[14:12]}, //func3 //4
                                     
-                                    IF_ID_Inst[19:15],       //Rs1
-                                    IF_ID_Inst[24:20],       //Rs2
-                                    IF_ID_Inst[11:7]} //rd
+                                    IF_ID_Inst[19:15],       //Rs1 //5
+                                    IF_ID_Inst[24:20],       //Rs2 //5
+                                    IF_ID_Inst[11:7]} //rd         //5
                                     ),
                                   
-                               .Q({ID_EX_Ctrl, ID_EX_PC, ID_EX_RegR1, ID_EX_RegR2, 
-                               ID_EX_Imm,ID_EX_Func, ID_EX_Rs1,ID_EX_Rs2,ID_EX_Rd} )
-                               
+                               .Q({ID_EX_Ctrl,      //8
+                                   ID_EX_PC,        //32
+                                   ID_EX_RegR1,     //32
+                                   ID_EX_RegR2,     //32
+                                   ID_EX_Imm,       //32
+                                   ID_EX_Func,      //4
+                                   ID_EX_Rs1,       //5
+                                   ID_EX_Rs2,       //5
+                                   ID_EX_Rd}        //5
+                                   )
                                );
 
    //ALU Control
@@ -174,7 +174,7 @@ module RISC_V_piplined(
    //MUX for ALU 2nd source
    n_bit_2_x_1_MUX  ALU_2nd_src( .a(ID_EX_Imm), //when ALUSrc //ImmGen_output
                                 .b(ID_EX_RegR2), //read_data_2
-                                .s(ALUSrc),
+                                .s(ID_EX_Ctrl[7]),
                                 .o(ALU_2nd_src_MUX_out));
                                                                                                
    //ALU
@@ -196,7 +196,7 @@ module RISC_V_piplined(
                   .rst(rst),
                   .load(1'b1),
                   .D({
-                      ID_EX_Ctrl[4:0], //WB, M
+                      ID_EX_Ctrl[4:0], //M, WB
                        branch_target,
                        zeroFlag,
                        ALU_output,
@@ -210,7 +210,7 @@ module RISC_V_piplined(
        .clk(clk),
        .MemRead(EX_MEM_Ctrl[3]),
        .MemWrite(EX_MEM_Ctrl[4]),
-       .addr(EX_MEM_ALU_out[5:0]/4),
+       .addr(EX_MEM_ALU_out[7:2]),
        .data_in(EX_MEM_RegR2),
        .data_out(read_data_mem)
    );

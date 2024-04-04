@@ -66,7 +66,7 @@ module RISC_V(
                                    .D(PC_input),
                                    .Q(PC));
     //instruction memory
-    InstMem IM(.addr(PC[5:0]/4), 
+    InstMem IM(.addr(PC[7:2]),  //instead of PC[5:0]/4
                .data_out(instruction));
     //register file
     Register_file RF(.clk(clk),
@@ -111,7 +111,7 @@ module RISC_V(
        .clk(clk),
        .MemRead(MemRead),
        .MemWrite(MemWrite),
-       .addr(ALU_output[5:0]/4),
+       .addr(ALU_output[7:2]), //instead of ALU_output[5:0]/4
        .data_in(read_data_2),
        .data_out(read_data_mem)
    );
