@@ -22,11 +22,11 @@
 
 module RISC_V_piplined(
     input  clk, //connected to a push button
-    input rst,  //connected to a push button (initialize pc and RF to zeros)
-    input [1:0] ledSel,// Select infomration displayed on leds (instructions, control signals)
-    input [3:0] ssdSel,// Select info displayed on SSD (PC, rs1, rs2, imm, etc..) //connected to pin E3
-    output reg [15:0] LEDs,
-    output reg [12:0] ssd
+    input rst  //connected to a push button (initialize pc and RF to zeros)
+//    input [1:0] ledSel,// Select infomration displayed on leds (instructions, control signals)
+//    input [3:0] ssdSel,// Select info displayed on SSD (PC, rs1, rs2, imm, etc..) //connected to pin E3
+//    output reg [15:0] LEDs,
+//    output reg [12:0] ssd
     );
 //Declaring all wires
     
@@ -55,6 +55,10 @@ module RISC_V_piplined(
     wire zeroFlag;
     wire [31:0] ALU_2nd_src_MUX_out;
     wire [31:0] ALU_output;
+    wire [1:0] ForwardA;
+    wire [1:0] ForwardB;
+    wire [31:0] ALU_first_input;
+    wire [31:0] ALU_register_second_input;
     
     //Register File
     wire [31:0] read_data_1;
@@ -173,12 +177,46 @@ module RISC_V_piplined(
                                    
    //MUX for ALU 2nd source
    n_bit_2_x_1_MUX  ALU_2nd_src( .a(ID_EX_Imm), //when ALUSrc //ImmGen_output
-                                .b(ID_EX_RegR2), //read_data_2
+                                .b(ALU_register_second_input), //read_data_2
                                 .s(ID_EX_Ctrl[7]),
                                 .o(ALU_2nd_src_MUX_out));
-                                                                                               
-   //ALU
-     N_bit_ALU #(32) alu_inst (.A(ID_EX_RegR1),
+   //Forwarding Unit
+   Forwarding_unit forwarding_unit(
+                                .ID_EX_RegisterRs1(ID_EX_Rs1),
+                                .ID_EX_RegisterRs2(ID_EX_Rs2),
+                                .EX_MEM_RegisterRd(EX_MEM_Rd),
+                                .MEM_WB_RegisterRd(MEM_WB_Rd),
+                                .EX_MEM_RegWrite(EX_MEM_Ctrl[0]),
+                                .MEM_WB_RegWrite(MEM_WB_Ctrl[0]),
+                                .ForwardA(ForwardA),
+                                .ForwardB(ForwardB)
+   );
+                         
+   //MUX for ForwardA
+   nbit_4to1_mux #(32) MUX_ForwardA(
+                                .in0(ID_EX_RegR1), //chosen sel = 00 normal case no forwarding
+                                .in1(write_data), //chosen sel = 01
+                                .in2(EX_MEM_ALU_out), //chosen sel = 10
+                                .in3(), //chosen sel = 11
+                                .sel(ForwardA),
+                                .out(ALU_first_input)
+   );
+   
+   
+   
+
+   //MUX for ForwardB
+   nbit_4to1_mux #(32) MUX_ForwardB(
+                                .in0(ID_EX_RegR2), //chosen sel = 00 normal case no forwarding
+                                .in1(write_data), //chosen sel = 01
+                                .in2(EX_MEM_ALU_out), //chosen sel = 10
+                                .in3(), //chosen sel = 11
+                                .sel(ForwardB),
+                                .out(ALU_register_second_input)
+   );
+   
+    //ALU
+     N_bit_ALU #(32) alu_inst (.A(ALU_first_input),
                                .B(ALU_2nd_src_MUX_out),
                                .sel(ALU_sel),
                                .ALU_output(ALU_output),
@@ -243,44 +281,44 @@ module RISC_V_piplined(
                           .s(EX_MEM_Zero & EX_MEM_Ctrl[2]),//TODO potential error //EX_MEM_Ctrl[2] is Branch
                           .o(PC_input));
           
-   //RISC-V input output
-   always @(*) begin
-       if(ledSel == 2'b00)
-           LEDs = instruction [15:0];
-       else if (ledSel == 2'b01)
-           LEDs = instruction [31:16];
-       else if (ledSel == 2'b10)
-           LEDs = {8'b00000000, ALUOp, ALU_sel, zeroFlag, zeroFlag & Branch};
-       else
-           LEDs = 0;
-       end    
+//   //RISC-V input output
+//   always @(*) begin
+//       if(ledSel == 2'b00)
+//           LEDs = instruction [15:0];
+//       else if (ledSel == 2'b01)
+//           LEDs = instruction [31:16];
+//       else if (ledSel == 2'b10)
+//           LEDs = {8'b00000000, ALUOp, ALU_sel, zeroFlag, zeroFlag & Branch};
+//       else
+//           LEDs = 0;
+//       end    
    
-   always @(*) begin
-       if(ssdSel == 4'b0000)
-           ssd = PC;
-       else if(ssdSel == 4'b0001)
-           ssd = PC + 1;
-       else if(ssdSel == 4'b0010)
-           ssd = branch_target;
-       else if(ssdSel == 4'b0011)
-           ssd = PC_input;
-       else if(ssdSel == 4'b0100)
-           ssd = read_data_1;
-       else if(ssdSel == 4'b0101)
-           ssd = read_data_2;
-       else if(ssdSel == 4'b0110)
-           ssd = write_data;
-       else if(ssdSel == 4'b0111)
-           ssd = ImmGen_output;
-       else if(ssdSel == 4'b1000)
-           ssd = shift_left_1_out;
-       else if(ssdSel == 4'b1001)
-           ssd = ALU_2nd_src_MUX_out;
-       else if(ssdSel == 4'b1010)
-           ssd = ALU_output;
-       else if(ssdSel == 4'b1011)
-           ssd = read_data_mem;
-   end
+//   always @(*) begin
+//       if(ssdSel == 4'b0000)
+//           ssd = PC;
+//       else if(ssdSel == 4'b0001)
+//           ssd = PC + 1;
+//       else if(ssdSel == 4'b0010)
+//           ssd = branch_target;
+//       else if(ssdSel == 4'b0011)
+//           ssd = PC_input;
+//       else if(ssdSel == 4'b0100)
+//           ssd = read_data_1;
+//       else if(ssdSel == 4'b0101)
+//           ssd = read_data_2;
+//       else if(ssdSel == 4'b0110)
+//           ssd = write_data;
+//       else if(ssdSel == 4'b0111)
+//           ssd = ImmGen_output;
+//       else if(ssdSel == 4'b1000)
+//           ssd = shift_left_1_out;
+//       else if(ssdSel == 4'b1001)
+//           ssd = ALU_2nd_src_MUX_out;
+//       else if(ssdSel == 4'b1010)
+//           ssd = ALU_output;
+//       else if(ssdSel == 4'b1011)
+//           ssd = read_data_mem;
+//   end
 
                                      
 endmodule

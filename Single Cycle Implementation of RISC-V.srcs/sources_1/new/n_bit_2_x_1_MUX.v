@@ -19,7 +19,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module n_bit_2_x_1_MUX #(N = 32)(//TODO potential error
+module n_bit_2_x_1_MUX #(N = 32)(
     input [N-1:0] a,
     input [N-1:0] b,
     input s,

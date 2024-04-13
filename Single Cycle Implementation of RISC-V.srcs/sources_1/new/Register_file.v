@@ -51,8 +51,8 @@ module Register_file(
     
   
     
-    // Handle write operation on the positive edge of the clock
-    always @(posedge clk) begin
+    // Handle write operation on the negative edge of the clock
+    always @(negedge clk) begin
      if(rst == 1'b1) begin
                for (i = 0; i < 32; i = i + 1) begin
                    registers[i] <= 0;

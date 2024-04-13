@@ -25,23 +25,23 @@ module RISC_V_piplined_tb;
 // Inputs
 reg clk;
 reg rst;
-reg [1:0] ledSel;
-reg [3:0] ssdSel;
+//reg [1:0] ledSel;
+//reg [3:0] ssdSel;
 
-// Outputs
-wire [15:0] LEDs;
-wire [12:0] ssd;
+//// Outputs
+//wire [15:0] LEDs;
+//wire [12:0] ssd;
 
 // Instantiate the Unit Under Test (UUT)
 RISC_V_piplined uut (
     .clk(clk),
-    .rst(rst),
-    .ledSel(ledSel),
-    .ssdSel(ssdSel),
-    .LEDs(LEDs),
-    .ssd(ssd)
+    .rst(rst)
+//    .ledSel(ledSel),
+//    .ssdSel(ssdSel),
+//    .LEDs(LEDs),
+//    .ssd(ssd)
 );
-
+always #50 clk = !clk;
 initial begin
     clk = 0;
     rst = 1;
@@ -80,7 +80,5 @@ end
 //    ssdSel = 4'b1010; #100;
 //    ssdSel = 4'b1011; #100;
 //end
-
-always #50 clk = !clk;
 
 endmodule
