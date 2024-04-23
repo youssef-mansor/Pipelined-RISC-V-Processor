@@ -69,6 +69,14 @@ module RISC_V_piplined(
     wire [31:0] MEM_WB_Mem_out, MEM_WB_ALU_out;
     wire [4:0] MEM_WB_Rd;
            
+    //Extra Wires yet to be placed proberly
+    wire branch_true;
+    wire [31:0] NOP;
+    wire [31:0] instructin_or_NOP;
+    wire [5:0] EX_MEM_ctrl_signals_or_flush;
+    assign branch_true = (PCSrc != 2'b00)? 1:0;
+    assign NOP = 32'b0000000_00000_00000_000_00000_0110011; 
+          
     //Instantiating Modules
     //Instantiate Program counter
     N_bit_register program_counter(.load(stall),
@@ -79,12 +87,19 @@ module RISC_V_piplined(
     //instruction memory
     InstMem IM(.addr(PC[7:2]), 
                .data_out(instruction));
+        
+    n_bit_2_x_1_MUX IF_ID_Flush_mux(
+        .a(NOP),
+        .b(instruction),
+        .s(branch_true),
+        .o(instructin_or_NOP)
+    );
                
     N_bit_register #(64) IF_ID(
                               .clk(clk),
                               .rst(rst),
                               .load(stall),//it should be always one
-                              .D({PC, instruction}),
+                              .D({PC, instructin_or_NOP}),
                               .Q({IF_ID_PC, IF_ID_Inst}));
     // Hazard detection unit
     HazardDetectionUnit hazard_detection_unit(
@@ -96,9 +111,9 @@ module RISC_V_piplined(
     );
     
     n_bit_2_x_1_MUX #(11) ctrl_mux(
-        .a({ALUSrc, ALUOp, MemWrite,MemRead,branchOp, MemtoReg, RegWrite}),
-        .b(11'b0),
-        .s(stall),
+        .b({ALUSrc, ALUOp, MemWrite,MemRead,branchOp, MemtoReg, RegWrite}),
+        .a(11'b0),
+        .s(~stall | branch_true),  //when we want to stall stall = 0, so its negative is 1 and in this mux a is picked when selection is 1
         .o(ctrl_signals)
     );
     //register file
@@ -225,12 +240,18 @@ module RISC_V_piplined(
      //Adder for immediate
      assign branch_target = shift_left_1_out + ID_EX_PC;
      
+     n_bit_2_x_1_MUX #(6) EX_MEM_ctrl_mux(
+        .a(6'b0),
+        .b(ID_EX_Ctrl[5:0]),
+        .s(branch_true),
+        .o(EX_MEM_ctrl_signals_or_flush)
+     );
     //EX/MEM
     N_bit_register #(207) EX_MEM (.clk(clk),
                    .rst(rst),
                    .load(1'b1),
                    .D({//5 + 32 + 32 + 1 + 32 + 32 + 32 + 3 + 32 + 5
-                       ID_EX_Ctrl[5:0], //M, WB
+                       EX_MEM_ctrl_signals_or_flush, //M, WB
                         branch_target,
                         CarryFlag, //new
                         zeroFlag,
