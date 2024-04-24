@@ -81,6 +81,8 @@ module N_bit_ALU #(parameter N = 32)( //refactor later to delete some wires
            
            4'b1101: ALU_output = {31'b0,(NegativeFlag != OverflowFlag)}; //SLT: to be understood
            4'b1111: ALU_output = {31'b0,(~CarryFlag)};
+           
+           4'b1011: ALU_output = B;
            default: ALU_output = 0;//
        endcase
    end

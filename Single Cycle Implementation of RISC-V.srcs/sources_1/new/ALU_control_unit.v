@@ -70,14 +70,14 @@ module ALU_control_unit(input [3:0] ALUOp,
             end
         endcase
       end
-//    else if (ALUOp==4'b1001)
-//      begin
-//        case(funct3)
-//          `F3_MUL: ALU_selection = `ALU_MUL;
-//          `F3_DIV: ALU_selection = `ALU_DIV;
-//          `F3_REM: ALU_selection = `ALU_REM;
-//          endcase
-//      end
+    else if (ALUOp==4'b1001)
+      begin
+        case(funct3)
+          `F3_MUL: ALU_selection = `ALU_MUL;
+          `F3_DIV: ALU_selection = `ALU_DIV;
+          `F3_REM: ALU_selection = `ALU_REM;
+          endcase
+      end
     else if(ALUOp == 4'b0010) //Branching
       ALU_selection = `ALU_SUB;
     else if(ALUOp == 4'b0011) //Load
