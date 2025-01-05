@@ -20,11 +20,11 @@
 <h3 align="center">Pipelined RISC-V Processor</h3>
 
   <p align="center">
-<!--     <a href="https://github.com/youssef-mansor/RISC-V-Datapath-single-cycle-implementation">View Demo</a> -->
+<!--     <a href="https://github.com/youssef-mansor/Pipelined-RISC-V-Processor">View Demo</a> -->
 <!--     · -->
-    <a href="https://github.com/youssef-mansor/RISC-V-Datapath-single-cycle-implementation/issues">Report Bug</a>
+    <a href="https://github.com/youssef-mansor/Pipelined-RISC-V-Processor/issues">Report Bug</a>
     ·
-    <a href="https://github.com/youssef-mansor/RISC-V-Datapath-single-cycle-implementation/issues">Request Feature</a>
+    <a href="https://github.com/youssef-mansor/Pipelined-RISC-V-Processor/issues">Request Feature</a>
   </p>
 </div>
 
@@ -244,16 +244,16 @@ The project utilizes the following technologies:
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
-[contributors-shield]: https://img.shields.io/github/contributors/youssef-mansor/RISC-V-Datapath-single-cycle-implementation.svg?style=for-the-badge
-[contributors-url]: https://github.com/youssef-mansor/RISC-V-Datapath-single-cycle-implementation/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/youssef-mansor/RISC-V-Datapath-single-cycle-implementation.svg?style=for-the-badge
-[forks-url]: https://github.com/youssef-mansor/RISC-V-Datapath-single-cycle-implementation/network/members
-[stars-shield]: https://img.shields.io/github/stars/youssef-mansor/RISC-V-Datapath-single-cycle-implementation.svg?style=for-the-badge
-[stars-url]: https://github.com/youssef-mansor/RISC-V-Datapath-single-cycle-implementation/stargazers
-[issues-shield]: https://img.shields.io/github/issues/youssef-mansor/RISC-V-Datapath-single-cycle-implementation.svg?style=for-the-badge
-[issues-url]: https://github.com/youssef-mansor/RISC-V-Datapath-single-cycle-implementation/issues
-[license-shield]: https://img.shields.io/github/license/youssef-mansor/RISC-V-Datapath-single-cycle-implementation.svg?style=for-the-badge
-[license-url]: https://github.com/youssef-mansor/RISC-V-Datapath-single-cycle-implementation/blob/main/LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/youssef-mansor/Pipelined-RISC-V-Processor.svg?style=for-the-badge
+[contributors-url]: https://github.com/youssef-mansor/Pipelined-RISC-V-Processor/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/youssef-mansor/Pipelined-RISC-V-Processor.svg?style=for-the-badge
+[forks-url]: https://github.com/youssef-mansor/Pipelined-RISC-V-Processor/network/members
+[stars-shield]: https://img.shields.io/github/stars/youssef-mansor/Pipelined-RISC-V-Processor.svg?style=for-the-badge
+[stars-url]: https://github.com/youssef-mansor/Pipelined-RISC-V-Processor/stargazers
+[issues-shield]: https://img.shields.io/github/issues/youssef-mansor/Pipelined-RISC-V-Processor.svg?style=for-the-badge
+[issues-url]: https://github.com/youssef-mansor/Pipelined-RISC-V-Processor/issues
+[license-shield]: https://img.shields.io/github/license/youssef-mansor/Pipelined-RISC-V-Processor.svg?style=for-the-badge
+[license-url]: https://github.com/youssef-mansor/Pipelined-RISC-V-Processor/blob/main/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/youssef-m-86a690174/
 [product-screenshot]: images/screenshot.png
