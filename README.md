@@ -17,7 +17,7 @@
 ![Image](images/RISC-V-Processor-pipelined-datapth-with-33-instructions.drawio.png)
 
 
-<h3 align="center">RISC-V Datapath single cycle implementation</h3>
+<h3 align="center">Pipelined RISC-V Processor</h3>
 
   <p align="center">
 <!--     <a href="https://github.com/youssef-mansor/RISC-V-Datapath-single-cycle-implementation">View Demo</a> -->
